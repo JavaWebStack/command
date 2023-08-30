@@ -56,27 +56,10 @@ public class CommandRouteBinder {
                     for (String command : commands) {
                         SimpleCommandDeclaration commandDecl = prefixDecl.clone();
                         commandDecl.parse(command, false);
-                        CommandRoute route = commandDecl.create(cli.getResolvers());
-                        route.handler(handler);
-                        bindMiddlewares(route, middlewares);
+                        cli.route(commandDecl, handler, middlewares.toArray(new String[0]));
                     }
                 }
             }
-        }
-    }
-
-    private void bindMiddlewares(CommandRoute route, List<String> middlewares) {
-        for (String name : middlewares) {
-            CommandHandler before = cli.getBeforeMiddleware(name);
-            CommandHandler after = cli.getAfterMiddleware(name);
-            if (before == null && after == null) {
-                // TODO: cli.getLogger().warning("Middleware \"" + name + "\" not found!");
-                continue;
-            }
-            if (before != null)
-                route.getBeforeMiddlewares().add(before);
-            if (after != null)
-                route.getAfterMiddlewares().add(after);
         }
     }
 
